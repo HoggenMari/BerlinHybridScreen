@@ -296,9 +296,11 @@ void setup()
  ac = new AudioContext();
  selectInput("Select an audio file:", "fileSelected");
 
-  loadUser();
+  //loadUser();
 
   silContext = new SilKinect(context);
+  
+  silContext.loadLastUser(5);
  //contrast();
 }
 
@@ -410,9 +412,13 @@ void draw()
     //offscreen1.endDraw();
     
   PImage img = silHR();
-  img.resize(100,100);
+  image(img,0,0);
   
-  PGraphics pgColorSil = createGraphics(100,100);
+  //PImage img2 = new PImage(img.width, img.height);
+  //img2.copy(img,0,0,img.width,img.height,0,0,img.width,img.height);
+  //img2.resize(100,100);
+  
+  PGraphics pgColorSil = createGraphics(640,480);
   pgColorSil.beginDraw();
   pgColorSil.background(0);
   for(int ix=0; ix<img.width; ix++){
@@ -424,8 +430,9 @@ void draw()
     }
   }
   pgColorSil.endDraw();
+  image(pgColorSil,0,0);
   
-  img.set(0,0,pgColorSil);
+  /*img.set(0,0,pgColorSil);
   
   pg.beginDraw();
   //pg.set(0,0,cam);
@@ -438,7 +445,7 @@ void draw()
     
   for(CornerPinSurface cps : surfaceList){
     cps.render(pg);
-  }
+  }*/
   
   //surface1.render(pg);
   //surface2.render(pg);
@@ -856,61 +863,13 @@ PImage gestureLive(){
   return(pgColorSil);
 }
 
-/*void recordUser(){
-  if(record){
-  boolean userMapEmpty = true;
-  if(frameCount%5==0){
-  println(frameRate);
-  PGraphics pgSaver = createGraphics(640,480);
-  pgSaver.beginDraw();
-  if(context.getNumberOfUsers() > 0) 
-  {    
-    userMap = context.userMap();
-    pgSaver.background(255);
-    pgSaver.loadPixels();
-    for(int i = 0; i < userMap.length; i++) 
-    {
-      if (userMap[i] !=0) 
-      {
-        //pixels[i] = context.rgbImage().pixels[i];
-        pgSaver.pixels[i] = color(0,0,0);
-        //println("true");
-        userMapEmpty = false;
-      }
-    }
-    if(!userMapEmpty){
-    pgSaver.updatePixels();
-    pgSaver.endDraw();
-    String fileName = "records/user"+recNum+"/frame"+frameNum+".jpg";
-    pgSaver.save(fileName);
-    image(pgSaver,0,0);
-    frameNum++;
-    }
-  }  
-  }
-  }
-}*/
-
-void loadUser(){
-    File file = new File("/Users/mariushoggenmuller/Documents/Processing/CCBerlin_2_/records/");
-    int dirNum = file.list().length-2;
-    file = new File("/Users/mariushoggenmuller/Documents/Processing/CCBerlin_2_/records/user"+dirNum);
-    int numFrames = file.list().length;
-    println(file.list().length);
-    
-    PImage[] images = new PImage[numFrames];
-    for(int i=0; i<numFrames; i++){
-      images[i]  = loadImage(file+"/"+file.list()[i]);
-    }
-    silList.add(images);
-}
-
 PImage silHR(){
   //background(0);
-  PImage[] images = silList.get(0);
+  PImage[] images = silContext.silList.get(0);
   int numFrames = images.length;
   currentFrame = (currentFrame+1) % numFrames;  // Use % to cycle through frames
   int offset = 0;
+  image(images[currentFrame],0,0);
   return images[currentFrame];
   /*for (int x = -100; x < width; x += images[0].width) { 
     image(images[(currentFrame+offset) % numFrames], x, -20);
@@ -919,3 +878,4 @@ PImage silHR(){
     offset+=2;
   }*/
 }
+
