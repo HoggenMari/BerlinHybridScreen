@@ -16,24 +16,29 @@ public class SilUser{
   } 
  
   public PImage getFrame(){
-    //if(frameCount%2==0){
+    if(frameCount%1==0){
     int numFrames = images.length;
-    currentFrame = (currentFrame+1) % numFrames;  // Use % to cycle through frames
+    if(currentFrame<numFrames-1){
+    currentFrame++;  // Use % to cycle through frames
+    } else {
+    currentFrame = 0;   
+    }
     int offset = 0;
     //image(images[currentFrame],0,0);
     PImage img = images[currentFrame];
+    //image(img,0,0);
     //img.resize(100,100);
     //img.filter(BLUR, (int)random(1,8));
-    /*PGraphics pg = createGraphics(img.width, img.height);
+    PGraphics pg = createGraphics(img.width, img.height);
     pg.beginDraw();
     pg.image(img,0,0);
-    pg.filter(BLUR, (int)random(1,8));
+    //pg.filter(BLUR, (int)random(1,8));
     pg.endDraw();
-    pgCur = pg;*/
+    pgCur = pg;
     //curFrame.image(pg,0,0);
-    //}
+    }
     //img.filter(INVERT);
-    return img; 
+    return pgCur; 
   }
   
   public PImage getFrameEffect(){

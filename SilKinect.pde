@@ -2,6 +2,7 @@ public class SilKinect{
   
  SimpleOpenNI context;
  int rate = 1;
+ int frameNum = 0;
  boolean record = false;
  int numberUser;
  public ArrayList<PImage []> silList = new ArrayList<PImage []>();
@@ -73,13 +74,23 @@ public class SilKinect{
    for(int i=0; i<amount; i++){
      File file = new File("/Users/mariushoggenmuller/Documents/Processing/CCBerlin_2_/records/user"+(numberUser-i));
      println(file);
-     int numFrames = file.list().length;
+     
+     int count = 0;
+     for(String fileName : file.list()){
+       if(fileName.contains("frame")){
+         count++;
+       }
+     }
+   
+     int numFrames = count;
      println(numFrames);
      PImage[] images = new PImage[numFrames];
      for(int j=0; j<numFrames; j++){
-       images[j]  = loadImage(file+"/"+file.list()[j]);
+       images[j]  = loadImage(file+"/"+"frame"+j+".jpg");
+       //image(images[j],0,400);
        PGraphics pg = createGraphics(images[j].width, images[j].height);
        pg.beginDraw();
+       pg.background(0);
        pg.image(images[j],0,0);
        pg.filter(BLUR, (int)random(2,8));
        pg.endDraw();  

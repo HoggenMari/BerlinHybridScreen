@@ -87,19 +87,19 @@ double songLength;
 //Silhouetten-Application
 boolean record = false;
 int recNum = 0;
-int frameNum = 0;
 ArrayList<PImage []> silList = new ArrayList<PImage []>();
 int currentFrame = 0;
 SilKinect silContext;
 ArrayList<SilUser> silUserList = new ArrayList<SilUser>();
 int amountUser = 5;
+PGraphics pgZ1;
 
 void setup()
 {
   //println(Capture.list());
   
   //frameRate(5);
-
+  
   size(1920, 1200, P3D);
   
   pg1 = createGraphics(4,4,JAVA2D);
@@ -184,7 +184,7 @@ void setup()
   screenList.add(screen14);
 
   
-  
+  pgZ1 = createGraphics(24,20);
 
   
   dmx = new DMXController("224.1.1.1", 5026, 4);  
@@ -561,10 +561,33 @@ void draw()
   //PImage img;
   //img = loadImage("/Users/mariushoggenmuller/Downloads/test.jpg");
   ledScreen1.set(0,0,cam);
+  //ledScreen1.blend(cam,0,0,cam.width,cam.height,0,0,ledScreen1.width,ledScreen1.height,BLEND);
+  //ledScreen1.resize(24,20);
   ledScreen1.endDraw();
+  //image(ledScreen1,0,0);
 
   PImage imgZs = ledScreen1.get(0, 0, ledScreen1.width, ledScreen1.height);
   imgZs.resize(24,20);
+  
+  pgZ1.beginDraw();
+  for(int ix=0; ix<pgZ1.width; ix++){
+    for(int iy=0; iy<pgZ1.height; iy++){
+      color c = imgZs.get(ix,iy);
+      int newAlpha = 120;
+      color newColor = (c & 0xffffff) | (newAlpha << 24); 
+      pgZ1.fill(newColor);  
+      pgZ1.noStroke();
+      pgZ1.rect(ix,iy,1,1);
+    }
+  }
+  //pgZ1.blend(imgZs,0,0,imgZs.width,imgZs.height,0,0,pgZ1.width,pgZ1.height,BLEND);
+  pgZ1.endDraw();
+  
+  pgZ1.filter(BLUR, 1);
+  //pgZ1.filter(GRAY);
+  
+  //image(pgZ1,0,0);
+  //image(imgZs,0,20);
   //imgZs = gestureLive();
   //image(ledScreen1,0,0);
   //image(pg1,0,0);
@@ -580,11 +603,12 @@ void draw()
        pgS.beginDraw();
        for(int ixp=0; ixp<4; ixp++){
         for(int iyp=0; iyp<4; iyp++){
-          color c = imgZs.get(ix*4+ixp,iy*4+iyp);
+          color c = pgZ1.get(ix*4+ixp,iy*4+iyp);
           //println(c);
           pgS.set(ixp,iyp,c);
         }
        }
+       //pgS.filter(BLUR, 6);
        pgS.endDraw();
        //if(zaehler-1==ran){
         //pgS.background(255); 
