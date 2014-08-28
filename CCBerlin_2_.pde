@@ -22,7 +22,6 @@ import java.util.Arrays;
 
 //Kinect
 SimpleOpenNI context;
-int[] userMap; 
 boolean KINECT = true;
 
 //Camera
@@ -46,10 +45,10 @@ ArrayList<LEDScreen> screenList = new ArrayList<LEDScreen>();
 Keystone ks;
 ArrayList<CornerPinSurface> surfaceList = new ArrayList<CornerPinSurface>();
 ArrayList<PGraphics> offscreenList = new ArrayList<PGraphics>();
-int HR_WIDTH = 100;
-int HR_HEIGHT = 100;
+int HR_WIDTH = 200;
+int HR_HEIGHT = 200;
 int HR_AMOUNT = 6;
-int[] displaySize = {2,2,3,3,3,3};
+int[] displaySize = {1,1,1,1,1,1};
 CornerPinSurface surface1, surface2, surface3,surface4, surface5, surface6;
 
 //PGraphics
@@ -92,12 +91,14 @@ int frameNum = 0;
 ArrayList<PImage []> silList = new ArrayList<PImage []>();
 int currentFrame = 0;
 SilKinect silContext;
+ArrayList<SilUser> silUserList = new ArrayList<SilUser>();
+int amountUser = 5;
 
 void setup()
 {
   //println(Capture.list());
   
-
+  //frameRate(5);
 
   size(1920, 1200, P3D);
   
@@ -300,9 +301,19 @@ void setup()
 
   silContext = new SilKinect(context);
   
-  silContext.loadLastUser(5);
+  new Thread(new Runnable() {
+        public void run() {
+            silContext.loadLastUser(5);
+        }
+    }).start();
+  
  //contrast();
 }
+
+void th(){
+  silContext.loadLastUser(1);
+}
+
 
 void draw()
 {
@@ -410,15 +421,32 @@ void draw()
     }
   }*/
     //offscreen1.endDraw();
+  
+  if(silUserList.size()<amountUser && silContext.getUserSize()>=amountUser){
+    silUserList.add(new SilUser(silContext.getRandomUser()));  
+  }
+  
+  
+  PImage img = new PImage();
+  int i=0;
+  for(SilUser sU : silUserList){
+    i++;
+    img = sU.getFrame();
+  }
+  //img.resize(200,200);
+  
+  //image(img,0,0);
     
-  PImage img = silHR();
-  image(img,0,0);
+  println(frameRate);
+  
+  //PImage img = silHR();
+  //image(img,0,0);
   
   //PImage img2 = new PImage(img.width, img.height);
   //img2.copy(img,0,0,img.width,img.height,0,0,img.width,img.height);
   //img2.resize(100,100);
   
-  PGraphics pgColorSil = createGraphics(640,480);
+  /*PGraphics pgColorSil = createGraphics(640,480);
   pgColorSil.beginDraw();
   pgColorSil.background(0);
   for(int ix=0; ix<img.width; ix++){
@@ -429,10 +457,11 @@ void draw()
       }   
     }
   }
-  pgColorSil.endDraw();
-  image(pgColorSil,0,0);
+  pgColorSil.endDraw();*/
+  //image(pgColorSil,0,0);
   
   /*img.set(0,0,pgColorSil);
+  
   
   pg.beginDraw();
   //pg.set(0,0,cam);
@@ -441,11 +470,22 @@ void draw()
   pg.endDraw();
   
 
-  //image(img,0,0);
+  //image(img,0,0);*/
     
+  //println("HERE");
+  
+  PGraphics pg = createGraphics(240,240);
+  pg.beginDraw();
+  //pg.set(0,0,cam);
+  pg.background(255);
+  pg.image(img,0,0);
+  pg.endDraw();
+  
+  //println("HERE");
+  
   for(CornerPinSurface cps : surfaceList){
     cps.render(pg);
-  }*/
+  }
   
   //surface1.render(pg);
   //surface2.render(pg);
@@ -608,6 +648,7 @@ void draw()
   //image(cam, 0, 0);
  
   silContext.update(); 
+ 
   
 }
 
@@ -820,10 +861,19 @@ void onLostUser(SimpleOpenNI curContext, int userId)
   
   record = false;
   silContext.stopRec();
+  //silContext.loadLastUser(1);
+
+  new Thread(new Runnable() {
+        public void run() {
+            silContext.loadLastUser(1);
+        }
+    }).start();
+    
+  //thread("th");
 
 }
 
-PImage gestureLive(){
+/*PImage gestureLive(){
   
   PGraphics pgSaver = createGraphics(640,480);
   pgSaver.beginDraw();
@@ -861,7 +911,7 @@ PImage gestureLive(){
   pgColorSil.endDraw();
   //image(pgColorSil,100,100);
   return(pgColorSil);
-}
+}*/
 
 PImage silHR(){
   //background(0);
