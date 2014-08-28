@@ -16,7 +16,7 @@ public class SilUser{
   } 
  
   public PImage getFrame(){
-    if(frameCount%1==0){
+    if(frameCount%2==0){
     int numFrames = images.length;
     if(currentFrame<numFrames-1){
     currentFrame++;  // Use % to cycle through frames

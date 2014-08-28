@@ -92,7 +92,7 @@ public class SilKinect{
        pg.beginDraw();
        pg.background(0);
        pg.image(images[j],0,0);
-       pg.filter(BLUR, (int)random(2,8));
+       pg.filter(BLUR, (int)random(2,6));
        pg.endDraw();  
        images[j] = pg;  
      }
@@ -102,11 +102,15 @@ public class SilKinect{
 }
  
  public void startRec(){
+   if(!record){
+   frameNum = 0;
    record = true; 
    numberUser++;
+   }
  }
  
  public void stopRec(){
+   if(record){
    record = false;  
    File file = new File("/Users/mariushoggenmuller/Documents/Processing/CCBerlin_2_/records/user"+numberUser);
    int numFrames = file.list().length;
@@ -119,6 +123,7 @@ public class SilKinect{
    silList.remove(0);
       
    println(silList.size());
+   }
  }
  
  public PImage[] getRandomUser(){

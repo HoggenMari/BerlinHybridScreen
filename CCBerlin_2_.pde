@@ -429,9 +429,21 @@ void draw()
   
   PImage img = new PImage();
   int i=0;
+  
+  
   for(SilUser sU : silUserList){
     i++;
     img = sU.getFrame();
+    
+    PGraphics pg = createGraphics(240,240);
+    pg.beginDraw();
+    //pg.set(0,0,cam);
+    pg.background(255);
+    pg.image(img,0,0);
+    pg.endDraw();
+    
+    surfaceList.get(i).render(pg);
+  
   }
   //img.resize(200,200);
   
@@ -474,18 +486,18 @@ void draw()
     
   //println("HERE");
   
-  PGraphics pg = createGraphics(240,240);
+  /*PGraphics pg = createGraphics(240,240);
   pg.beginDraw();
   //pg.set(0,0,cam);
   pg.background(255);
   pg.image(img,0,0);
-  pg.endDraw();
+  pg.endDraw();*/
   
   //println("HERE");
   
-  for(CornerPinSurface cps : surfaceList){
+  /*for(CornerPinSurface cps : surfaceList){
     cps.render(pg);
-  }
+  }*/
   
   //surface1.render(pg);
   //surface2.render(pg);
@@ -584,7 +596,25 @@ void draw()
   pgZ1.endDraw();
   
   pgZ1.filter(BLUR, 1);
-  //pgZ1.filter(GRAY);
+  pgZ1.filter(GRAY);
+  
+  PGraphics abstractGr = createGraphics(480,400);
+  abstractGr.beginDraw();
+  abstractGr.background(0);
+  for(int ix=0; ix<pgZ1.width; ix++){
+    for(int iy=0; iy<pgZ1.height; iy++){
+      color c = pgZ1.get(ix,iy);
+      if(brightness(c)>100){
+      abstractGr.stroke(c);
+      abstractGr.line(ix*20,iy*20,ix*20+20,iy*20+20);   
+      abstractGr.line(ix*20,iy*20,ix*20+20,iy*20-20);   
+      } 
+    }
+  }
+  abstractGr.endDraw();
+  
+  image(abstractGr,0,0);
+  
   
   //image(pgZ1,0,0);
   //image(imgZs,0,20);
@@ -749,7 +779,7 @@ br++;
   }
   zoff += zincrement; // Increment zoff
   pg.endDraw();
-  //image(pg,0,0);
+  image(pg,0,0);
   
 }
 
